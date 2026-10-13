@@ -1,9 +1,9 @@
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 
 plugins {
+    application
     id("java")
-    id("io.github.ben-manes.versions") version "0.64.0"
-
+    id("com.github.ben-manes.versions") version "0.64.0"
 }
 
 group = "hexlet.code"
@@ -11,6 +11,9 @@ version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
+}
+application {
+    mainClass = "hexlet.code.app.Main"
 }
 
 dependencies {
