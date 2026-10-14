@@ -13,7 +13,7 @@ repositories {
     mavenCentral()
 }
 application {
-    mainClass = "hexlet.code.app.Main"
+    mainClass = "hexlet.code.Main"
 }
 
 dependencies {
