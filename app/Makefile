@@ -1,11 +1,11 @@
-.PHONY: build run clean test help
+.PHONY: build install clean run check spotlessCheck spotlessApply jacocoTest test
 
 
 build:
 	./gradlew build
 
 install:
-	./gradlew instalDist
+	./gradlew installDist
 
 clean:
 	./gradlew clean
@@ -15,3 +15,15 @@ run:
 
 check:
 	./gradlew check
+
+spotlessCheck:
+	./gradlew spotlessCheck
+
+spotlessApply:
+	./gradlew spotlessApply
+
+jacocoTest:
+	./gradlew jacocoTestCoverageVerification
+
+test:
+	./gradlew test
