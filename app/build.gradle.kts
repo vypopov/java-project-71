@@ -3,7 +3,7 @@ import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 plugins {
     application
     id("java")
-    id("com.github.ben-manes.versions") version "0.64.0"
+    id("io.github.ben-manes.versions") version "0.64.0"
 }
 
 group = "hexlet.code"
@@ -13,10 +13,12 @@ repositories {
     mavenCentral()
 }
 application {
-    mainClass = "hexlet.code.Main"
+    mainClass = "hexlet.code.App"
 }
 
 dependencies {
+    implementation("info.picocli:picocli:4.7.7")
+    annotationProcessor("info.picocli:picocli-codegen:4.7.7")
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
 }
