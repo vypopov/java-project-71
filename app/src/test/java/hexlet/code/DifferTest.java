@@ -24,7 +24,7 @@ public class DifferTest {
   @Test
   void testYaml() throws Exception {
     Path file1 = Path.of("src/test/resources/file1.yml");
-    Path file2 = Path.of("src/test/resources/file2.yml;");
+    Path file2 = Path.of("src/test/resources/file2.yml");
     Path expectedFile = Path.of("src/test/resources/expected.txt");
 
     String expected = Files.readString(expectedFile).replace("\r\n", "\n").stripTrailing();
