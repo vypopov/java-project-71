@@ -1,6 +1,5 @@
 package hexlet.code;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
@@ -10,19 +9,18 @@ import java.util.TreeSet;
 /** Compares two configuration files. */
 public final class Differ {
 
-  /** JSON parser. */
-  private static final ObjectMapper MAPPER = new ObjectMapper();
-
   private Differ() {}
 
   private static Map<String, Object> read(final String filepath) throws Exception {
-    var mapType = MAPPER.getTypeFactory().constructMapType(Map.class, String.class, Object.class);
+    String content = Files.readString(Path.of(filepath));
 
-    return MAPPER.readValue(Files.readString(Path.of(filepath)), mapType);
+    String format = filepath.substring(filepath.lastIndexOf('.') + 1).toLowerCase();
+
+    return Parser.parse(content, format);
   }
 
   /**
-   * Generates a difference between two JSON files.
+   * Generates a difference between two configuration files.
    *
    * @param filepath1 path to the first file
    * @param filepath2 path to the second file
