@@ -5,8 +5,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 public class DifferTest {
+
+  @TempDir Path tempDir;
 
   @Test
   public void testGenerate() throws Exception {
@@ -32,5 +35,25 @@ public class DifferTest {
     String actual = Differ.generate(file1.toString(), file2.toString());
 
     assertEquals(expected, actual);
+  }
+
+  @Test
+  void testNestedValuesAndDefaultFormat() throws Exception {
+    Path file1 = tempDir.resolve("before.json");
+    Path file2 = tempDir.resolve("after.json");
+    Files.writeString(file1, "{\"array\":[1,2],\"object\":{\"nested\":true},\"value\":1}");
+    Files.writeString(file2, "{\"array\":[1,2],\"object\":{\"nested\":false},\"value\":2}");
+
+    String actual = Differ.generate(file1.toString(), file2.toString());
+
+    assertEquals(
+        "{\n"
+            + "    array: [1, 2]\n"
+            + "  - object: {nested=true}\n"
+            + "  + object: {nested=false}\n"
+            + "  - value: 1\n"
+            + "  + value: 2\n"
+            + "}",
+        actual);
   }
 }

@@ -2,6 +2,7 @@ package hexlet.code;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeSet;
@@ -13,48 +14,44 @@ public final class Differ {
 
   private static Map<String, Object> read(final String filepath) throws Exception {
     String content = Files.readString(Path.of(filepath));
-
     String format = filepath.substring(filepath.lastIndexOf('.') + 1).toLowerCase();
-
     return Parser.parse(content, format);
   }
 
-  /**
-   * Generates a difference between two configuration files.
-   *
-   * @param filepath1 path to the first file
-   * @param filepath2 path to the second file
-   * @return formatted difference
-   * @throws Exception if reading or parsing fails
-   */
+  /** Generates a stylish difference between two configuration files. */
   public static String generate(final String filepath1, final String filepath2) throws Exception {
+    return generate(filepath1, filepath2, "stylish");
+  }
+
+  /** Generates a difference between two configuration files. */
+  public static String generate(final String filepath1, final String filepath2, final String format)
+      throws Exception {
     Map<String, Object> data1 = read(filepath1);
     Map<String, Object> data2 = read(filepath2);
-
     var keys = new TreeSet<String>();
     keys.addAll(data1.keySet());
     keys.addAll(data2.keySet());
 
-    var result = new StringBuilder("{\n");
-
+    var differences = new ArrayList<DiffEntry>();
     for (String key : keys) {
       boolean in1 = data1.containsKey(key);
       boolean in2 = data2.containsKey(key);
-      Object v1 = data1.get(key);
-      Object v2 = data2.get(key);
-
+      Object value1 = data1.get(key);
+      Object value2 = data2.get(key);
       if (!in2) {
-        result.append("  - ").append(key).append(": ").append(v1).append("\n");
+        differences.add(new DiffEntry(key, "removed", value1));
       } else if (!in1) {
-        result.append("  + ").append(key).append(": ").append(v2).append("\n");
-      } else if (Objects.equals(v1, v2)) {
-        result.append("    ").append(key).append(": ").append(v1).append("\n");
+        differences.add(new DiffEntry(key, "added", value2));
+      } else if (Objects.equals(value1, value2)) {
+        differences.add(new DiffEntry(key, "unchanged", value1));
       } else {
-        result.append("  - ").append(key).append(": ").append(v1).append("\n");
-        result.append("  + ").append(key).append(": ").append(v2).append("\n");
+        differences.add(new DiffEntry(key, "changed", value1, value2));
       }
     }
 
-    return result.append("}").toString();
+    return switch (format) {
+      case "stylish" -> Stylish.format(differences);
+      default -> throw new IllegalArgumentException("Unsupported format: " + format);
+    };
   }
 }
