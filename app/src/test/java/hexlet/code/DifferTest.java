@@ -56,4 +56,25 @@ public class DifferTest {
             + "}",
         actual);
   }
+
+  @Test
+  void testPlainFormat() throws Exception {
+    Path file1 = tempDir.resolve("before.json");
+    Path file2 = tempDir.resolve("after.json");
+    Files.writeString(
+        file1,
+        "{\"added\":\"value\",\"changed\":false,\"object\":{\"x\":1},\"removed\":null,\"same\":5}");
+    Files.writeString(
+        file2, "{\"added\":\"value2\",\"changed\":true,\"object\":[1,2],\"new\":null,\"same\":5}");
+
+    String actual = Differ.generate(file1.toString(), file2.toString(), "plain");
+
+    assertEquals(
+        "Property 'added' was updated. From 'value' to 'value2'\n"
+            + "Property 'changed' was updated. From false to true\n"
+            + "Property 'new' was added with value: null\n"
+            + "Property 'object' was updated. From [complex value] to [complex value]\n"
+            + "Property 'removed' was removed",
+        actual);
+  }
 }

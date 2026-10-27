@@ -49,9 +49,6 @@ public final class Differ {
       }
     }
 
-    return switch (format) {
-      case "stylish" -> Stylish.format(differences);
-      default -> throw new IllegalArgumentException("Unsupported format: " + format);
-    };
+    return Formatter.format(differences, format);
   }
 }

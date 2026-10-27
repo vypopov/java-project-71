@@ -1,5 +1,6 @@
-package hexlet.code;
+package hexlet.code.formatters;
 
+import hexlet.code.DiffEntry;
 import java.util.List;
 
 /** Formats differences in the stylish representation. */
@@ -11,12 +12,15 @@ public final class Stylish {
     var result = new StringBuilder("{\n");
     for (DiffEntry difference : differences) {
       switch (difference.status()) {
-        case "removed" -> append(result, "  - ", difference.key(), difference.oldValue());
-        case "added" -> append(result, "  + ", difference.key(), difference.oldValue());
-        case "unchanged" -> append(result, "    ", difference.key(), difference.oldValue());
+        case "removed" ->
+            append(result, replicate(" ", 2) + "- ", difference.key(), difference.oldValue());
+        case "added" ->
+            append(result, replicate(" ", 2) + "+ ", difference.key(), difference.oldValue());
+        case "unchanged" ->
+            append(result, replicate(" ", 4), difference.key(), difference.oldValue());
         case "changed" -> {
-          append(result, "  - ", difference.key(), difference.oldValue());
-          append(result, "  + ", difference.key(), difference.newValue());
+          append(result, replicate(" ", 2) + "- ", difference.key(), difference.oldValue());
+          append(result, replicate(" ", 2) + "+ ", difference.key(), difference.newValue());
         }
         default ->
             throw new IllegalArgumentException("Unsupported diff status: " + difference.status());
@@ -27,5 +31,9 @@ public final class Stylish {
 
   private static void append(StringBuilder result, String prefix, String key, Object value) {
     result.append(prefix).append(key).append(": ").append(value).append("\n");
+  }
+
+  private static String replicate(String value, int count) {
+    return value.repeat(count);
   }
 }
