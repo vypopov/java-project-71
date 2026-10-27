@@ -1,0 +1,7 @@
+{
+    array: [1, 2]
+  - object: {nested=true}
+  + object: {nested=false}
+  - value: 1
+  + value: 2
+}

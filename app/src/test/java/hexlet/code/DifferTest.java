@@ -5,76 +5,74 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 
 public class DifferTest {
 
-  @TempDir Path tempDir;
+  private static final Path RESOURCES = Path.of("src/test/resources");
 
   @Test
-  public void testGenerate() throws Exception {
-    Path file1 = Path.of("src/test/resources/file1.json");
-    Path file2 = Path.of("src/test/resources/file2.json");
-    Path expectedFile = Path.of("src/test/resources/expected.txt");
-
-    String expected = Files.readString(expectedFile).replace("\r\n", "\n").stripTrailing();
-
-    String actual = Differ.generate(file1.toString(), file2.toString());
-
-    assertEquals(expected, actual);
+  void testStylishFormat() throws Exception {
+    assertDiff(
+        "stylish",
+        "fixtures/stylish/before.json",
+        "fixtures/stylish/after.json",
+        "fixtures/stylish/expected.txt");
   }
 
   @Test
-  void testYaml() throws Exception {
-    Path file1 = Path.of("src/test/resources/file1.yml");
-    Path file2 = Path.of("src/test/resources/file2.yml");
-    Path expectedFile = Path.of("src/test/resources/expected.txt");
-
-    String expected = Files.readString(expectedFile).replace("\r\n", "\n").stripTrailing();
-
-    String actual = Differ.generate(file1.toString(), file2.toString());
-
-    assertEquals(expected, actual);
+  void testYamlInputs() throws Exception {
+    assertDiff(
+        "stylish",
+        "fixtures/yaml/before.yml",
+        "fixtures/yaml/after.yml",
+        "fixtures/yaml/expected.txt");
   }
 
   @Test
   void testNestedValuesAndDefaultFormat() throws Exception {
-    Path file1 = tempDir.resolve("before.json");
-    Path file2 = tempDir.resolve("after.json");
-    Files.writeString(file1, "{\"array\":[1,2],\"object\":{\"nested\":true},\"value\":1}");
-    Files.writeString(file2, "{\"array\":[1,2],\"object\":{\"nested\":false},\"value\":2}");
-
-    String actual = Differ.generate(file1.toString(), file2.toString());
-
-    assertEquals(
-        "{\n"
-            + "    array: [1, 2]\n"
-            + "  - object: {nested=true}\n"
-            + "  + object: {nested=false}\n"
-            + "  - value: 1\n"
-            + "  + value: 2\n"
-            + "}",
-        actual);
+    assertDiff(
+        "fixtures/nested/before.json",
+        "fixtures/nested/after.json",
+        "fixtures/nested/expected.txt");
   }
 
   @Test
   void testPlainFormat() throws Exception {
-    Path file1 = tempDir.resolve("before.json");
-    Path file2 = tempDir.resolve("after.json");
-    Files.writeString(
-        file1,
-        "{\"added\":\"value\",\"changed\":false,\"object\":{\"x\":1},\"removed\":null,\"same\":5}");
-    Files.writeString(
-        file2, "{\"added\":\"value2\",\"changed\":true,\"object\":[1,2],\"new\":null,\"same\":5}");
+    assertDiff(
+        "plain",
+        "fixtures/plain/before.json",
+        "fixtures/plain/after.json",
+        "fixtures/plain/expected.txt");
+  }
 
-    String actual = Differ.generate(file1.toString(), file2.toString(), "plain");
+  @Test
+  void testJsonFormat() throws Exception {
+    assertDiff(
+        "json",
+        "fixtures/json/before.json",
+        "fixtures/json/after.json",
+        "fixtures/json/expected.json");
+  }
 
-    assertEquals(
-        "Property 'added' was updated. From 'value' to 'value2'\n"
-            + "Property 'changed' was updated. From false to true\n"
-            + "Property 'new' was added with value: null\n"
-            + "Property 'object' was updated. From [complex value] to [complex value]\n"
-            + "Property 'removed' was removed",
-        actual);
+  private void assertDiff(String format, String file1, String file2, String expectedFile)
+      throws Exception {
+    String expected = readResource(expectedFile);
+    String actual =
+        Differ.generate(
+            RESOURCES.resolve(file1).toString(), RESOURCES.resolve(file2).toString(), format);
+
+    assertEquals(expected, actual);
+  }
+
+  private void assertDiff(String file1, String file2, String expectedFile) throws Exception {
+    String expected = readResource(expectedFile);
+    String actual =
+        Differ.generate(RESOURCES.resolve(file1).toString(), RESOURCES.resolve(file2).toString());
+
+    assertEquals(expected, actual);
+  }
+
+  private String readResource(String filepath) throws Exception {
+    return Files.readString(RESOURCES.resolve(filepath)).replace("\r\n", "\n").stripTrailing();
   }
 }

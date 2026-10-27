@@ -1,0 +1,5 @@
+Property 'added' was updated. From 'value' to 'value2'
+Property 'changed' was updated. From false to true
+Property 'new' was added with value: null
+Property 'object' was updated. From [complex value] to [complex value]
+Property 'removed' was removed

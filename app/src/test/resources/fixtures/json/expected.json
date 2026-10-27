@@ -1,0 +1,1 @@
+[{"key":"added","status":"added","oldValue":[1,2],"newValue":null},{"key":"changed","status":"changed","oldValue":1,"newValue":2},{"key":"removed","status":"removed","oldValue":true,"newValue":null},{"key":"same","status":"unchanged","oldValue":"value","newValue":null}]
